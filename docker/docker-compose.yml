@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  patient-doctor-bridge:
+    image: "patient-doctor-bridge"
+    ports:
+      - "9002:8080"
+      - "5005:5005"
+    environment:
+      - _JAVA_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
