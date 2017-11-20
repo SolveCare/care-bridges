@@ -8,9 +8,7 @@ import lombok.Data;
 public class DoctorDto {
 
     private String id;
-
     private String firstName;
-
     private String lastName;
 
 }
