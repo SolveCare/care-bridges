@@ -1,11 +1,9 @@
-package care.patient_doctor.bridge.transformer;
+package care.patient.doctor.bridge.transformer;
 
-import care.patient_doctor.bridge.dto.ScheduleSlotDto;
-import care.patient_doctor.bridge.transformer.third.party.entity.ThirdPartyScheduleSlot;
+import care.patient.doctor.bridge.dto.ScheduleSlotDto;
+import care.patient.doctor.bridge.entity.ThirdPartyScheduleSlot;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-
-import java.time.Instant;
 
 @Component
 public class ThirdPartyToCareScheduleTransformer implements Transformer <ThirdPartyScheduleSlot, ScheduleSlotDto> {

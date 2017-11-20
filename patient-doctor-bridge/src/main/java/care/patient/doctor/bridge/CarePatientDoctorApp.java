@@ -1,4 +1,4 @@
-package care.patient_doctor.bridge;
+package care.patient.doctor.bridge;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

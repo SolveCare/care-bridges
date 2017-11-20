@@ -1,12 +1,11 @@
-package care.patient_doctor.bridge.service;
+package care.patient.doctor.bridge.service;
 
-import care.patient_doctor.bridge.dto.DoctorDto;
-import care.patient_doctor.bridge.dto.ScheduleSlotDto;
-import care.patient_doctor.bridge.transformer.ThirdPartyToCareDoctorTransformer;
-import care.patient_doctor.bridge.transformer.ThirdPartyToCareScheduleTransformer;
-import care.patient_doctor.bridge.transformer.third.party.entity.ThirdPartyDoctor;
-import care.patient_doctor.bridge.transformer.third.party.entity.ThirdPartyScheduleSlot;
-import com.sun.jndi.toolkit.url.Uri;
+import care.patient.doctor.bridge.dto.DoctorDto;
+import care.patient.doctor.bridge.dto.ScheduleSlotDto;
+import care.patient.doctor.bridge.entity.ThirdPartyScheduleSlot;
+import care.patient.doctor.bridge.transformer.ThirdPartyToCareDoctorTransformer;
+import care.patient.doctor.bridge.transformer.ThirdPartyToCareScheduleTransformer;
+import care.patient.doctor.bridge.entity.ThirdPartyDoctor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -14,9 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.lang.reflect.Array;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,32 +26,29 @@ public class BridgeSample implements PatientDoctorBridgeService {
     @Value("${third.party.url.schedule}")
     private String scheduleEndpoint;
 
-    @Value("${third.party.url.book}")
-    private String bookEndpoint;
-
     private ThirdPartyToCareDoctorTransformer doctorTransformer;
     private ThirdPartyToCareScheduleTransformer scheduleTransformer;
+    private HttpEntity httpEntity;
+    private RestTemplate restTemplate;
 
     @Autowired
-    public BridgeSample(ThirdPartyToCareDoctorTransformer doctorTransformer, ThirdPartyToCareScheduleTransformer scheduleTransformer) {
+    public BridgeSample(ThirdPartyToCareDoctorTransformer doctorTransformer, ThirdPartyToCareScheduleTransformer scheduleTransformer, HttpEntity httpEntity, RestTemplate restTemplate) {
         this.doctorTransformer = doctorTransformer;
         this.scheduleTransformer = scheduleTransformer;
+        this.httpEntity = httpEntity;
+        this.restTemplate = restTemplate;
     }
 
     @Override
     public List<ScheduleSlotDto> getFreeScheduleSlots(String doctorId) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity entity = new HttpEntity(headers);
-
         URI uri = UriComponentsBuilder.fromHttpUrl(scheduleEndpoint)
                 .queryParam("doctorId", doctorId)
                 .build()
                 .encode()
                 .toUri();
 
-        ResponseEntity<ThirdPartyScheduleSlot[]> response = new RestTemplate().exchange(
-                uri, HttpMethod.GET, entity, ThirdPartyScheduleSlot[].class);
+        ResponseEntity<ThirdPartyScheduleSlot[]> response = restTemplate.exchange(
+                uri, HttpMethod.GET, httpEntity, ThirdPartyScheduleSlot[].class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Unsuccessful third party endpoint call.");
@@ -65,10 +59,6 @@ public class BridgeSample implements PatientDoctorBridgeService {
 
     @Override
     public List<ScheduleSlotDto> getPatientScheduleSlots(String doctorId, String patientId) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity entity = new HttpEntity(headers);
-
         URI uri = UriComponentsBuilder.fromHttpUrl(scheduleEndpoint)
                 .queryParam("doctorId", doctorId)
                 .queryParam("patientId", patientId)
@@ -76,8 +66,8 @@ public class BridgeSample implements PatientDoctorBridgeService {
                 .encode()
                 .toUri();
 
-        ResponseEntity<ThirdPartyScheduleSlot[]> response = new RestTemplate().exchange(
-                uri, HttpMethod.GET, entity, ThirdPartyScheduleSlot[].class);
+        ResponseEntity<ThirdPartyScheduleSlot[]> response = restTemplate.exchange(
+                uri, HttpMethod.GET, httpEntity, ThirdPartyScheduleSlot[].class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Unsuccessful third party endpoint call.");
@@ -87,13 +77,25 @@ public class BridgeSample implements PatientDoctorBridgeService {
     }
 
     @Override
-    public List<DoctorDto> getDoctors() {
+    public ScheduleSlotDto createScheduleSlot(ScheduleSlotDto scheduleSlotDto) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity entity = new HttpEntity(headers);
+        HttpEntity entity = new HttpEntity(scheduleSlotDto, headers);
 
-        ResponseEntity<ThirdPartyDoctor[]> response = new RestTemplate().exchange(
-                doctorEndpoint, HttpMethod.GET, entity, ThirdPartyDoctor[].class);
+        ResponseEntity<ThirdPartyScheduleSlot> response = restTemplate.exchange(
+                scheduleEndpoint, HttpMethod.POST, entity, ThirdPartyScheduleSlot.class);
+
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Unsuccessful third party endpoint call.");
+        }
+
+        return scheduleTransformer.transform(response.getBody());
+    }
+
+    @Override
+    public List<DoctorDto> getDoctors() {
+        ResponseEntity<ThirdPartyDoctor[]> response = restTemplate.exchange(
+                doctorEndpoint, HttpMethod.GET, httpEntity, ThirdPartyDoctor[].class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Unsuccessful third party endpoint call.");
@@ -104,19 +106,15 @@ public class BridgeSample implements PatientDoctorBridgeService {
 
     @Override
     public boolean bookScheduleSlot(String slotId, String patientId) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity entity = new HttpEntity(headers);
-
-        URI uri = UriComponentsBuilder.fromHttpUrl(bookEndpoint)
+        URI uri = UriComponentsBuilder.fromHttpUrl(scheduleEndpoint)
                 .queryParam("scheduleId", slotId)
                 .queryParam("patientId", patientId)
                 .build()
                 .encode()
                 .toUri();
 
-        ResponseEntity<Boolean> response = new RestTemplate().exchange(
-                uri, HttpMethod.PUT, entity, Boolean.class);
+        ResponseEntity<Boolean> response = restTemplate.exchange(
+                uri, HttpMethod.PUT, httpEntity, Boolean.class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Unsuccessful third party endpoint call.");

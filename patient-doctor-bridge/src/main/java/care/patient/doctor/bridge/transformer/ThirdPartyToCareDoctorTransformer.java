@@ -1,7 +1,7 @@
-package care.patient_doctor.bridge.transformer;
+package care.patient.doctor.bridge.transformer;
 
-import care.patient_doctor.bridge.dto.DoctorDto;
-import care.patient_doctor.bridge.transformer.third.party.entity.ThirdPartyDoctor;
+import care.patient.doctor.bridge.dto.DoctorDto;
+import care.patient.doctor.bridge.entity.ThirdPartyDoctor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 

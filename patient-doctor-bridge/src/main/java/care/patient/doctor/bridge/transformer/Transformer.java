@@ -1,4 +1,4 @@
-package care.patient_doctor.bridge.transformer;
+package care.patient.doctor.bridge.transformer;
 
 import java.util.List;
 import java.util.stream.Collectors;

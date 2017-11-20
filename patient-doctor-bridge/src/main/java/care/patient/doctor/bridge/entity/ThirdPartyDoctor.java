@@ -1,10 +1,7 @@
-package care.patient_doctor.bridge.transformer.third.party.entity;
+package care.patient.doctor.bridge.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-
-import java.time.Instant;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
