@@ -105,7 +105,7 @@ public class BridgeSample implements PatientDoctorBridgeService {
     }
 
     @Override
-    public boolean bookScheduleSlot(String slotId, String patientId) {
+    public ScheduleSlotDto bookScheduleSlot(String slotId, String patientId) {
         URI uri = UriComponentsBuilder.fromHttpUrl(scheduleEndpoint)
                 .queryParam("scheduleId", slotId)
                 .queryParam("patientId", patientId)
@@ -113,8 +113,8 @@ public class BridgeSample implements PatientDoctorBridgeService {
                 .encode()
                 .toUri();
 
-        ResponseEntity<Boolean> response = restTemplate.exchange(
-                uri, HttpMethod.PUT, httpEntity, Boolean.class);
+        ResponseEntity<ScheduleSlotDto> response = restTemplate.exchange(
+                uri, HttpMethod.PUT, httpEntity, ScheduleSlotDto.class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Unsuccessful third party endpoint call.");

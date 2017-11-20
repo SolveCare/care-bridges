@@ -15,6 +15,6 @@ public interface PatientDoctorBridgeService {
 
     List<DoctorDto> getDoctors();
 
-    boolean bookScheduleSlot(String slotId, String patientId);
+    ScheduleSlotDto bookScheduleSlot(String slotId, String patientId);
 
 }
