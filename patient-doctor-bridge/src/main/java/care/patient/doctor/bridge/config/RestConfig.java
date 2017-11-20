@@ -2,25 +2,19 @@ package care.patient.doctor.bridge.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
+import sun.net.www.http.HttpClient;
 
 @Configuration
 public class RestConfig {
 
-    @Bean(name = "httpEntity")
-    public HttpEntity getHttpEntity() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        return new HttpEntity(headers);
-    }
-
-    @Bean(name = "restTemplate")
+    @Bean("restTemplate")
     public RestTemplate getRestTemplate() {
-        return new RestTemplate();
-    }
+        RestTemplate restTemplate = new RestTemplate();
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        restTemplate.setRequestFactory(requestFactory);
 
+        return restTemplate;
+    }
 }

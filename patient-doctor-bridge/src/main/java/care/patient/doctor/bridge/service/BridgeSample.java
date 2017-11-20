@@ -28,14 +28,12 @@ public class BridgeSample implements PatientDoctorBridgeService {
 
     private ThirdPartyToCareDoctorTransformer doctorTransformer;
     private ThirdPartyToCareScheduleTransformer scheduleTransformer;
-    private HttpEntity httpEntity;
     private RestTemplate restTemplate;
 
     @Autowired
-    public BridgeSample(ThirdPartyToCareDoctorTransformer doctorTransformer, ThirdPartyToCareScheduleTransformer scheduleTransformer, HttpEntity httpEntity, RestTemplate restTemplate) {
+    public BridgeSample(ThirdPartyToCareDoctorTransformer doctorTransformer, ThirdPartyToCareScheduleTransformer scheduleTransformer, RestTemplate restTemplate) {
         this.doctorTransformer = doctorTransformer;
         this.scheduleTransformer = scheduleTransformer;
-        this.httpEntity = httpEntity;
         this.restTemplate = restTemplate;
     }
 
@@ -48,7 +46,7 @@ public class BridgeSample implements PatientDoctorBridgeService {
                 .toUri();
 
         ResponseEntity<ThirdPartyScheduleSlot[]> response = restTemplate.exchange(
-                uri, HttpMethod.GET, httpEntity, ThirdPartyScheduleSlot[].class);
+                uri, HttpMethod.GET, null, ThirdPartyScheduleSlot[].class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Unsuccessful third party endpoint call.");
@@ -67,7 +65,7 @@ public class BridgeSample implements PatientDoctorBridgeService {
                 .toUri();
 
         ResponseEntity<ThirdPartyScheduleSlot[]> response = restTemplate.exchange(
-                uri, HttpMethod.GET, httpEntity, ThirdPartyScheduleSlot[].class);
+                uri, HttpMethod.GET, null, ThirdPartyScheduleSlot[].class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Unsuccessful third party endpoint call.");
@@ -95,7 +93,7 @@ public class BridgeSample implements PatientDoctorBridgeService {
     @Override
     public List<DoctorDto> getDoctors() {
         ResponseEntity<ThirdPartyDoctor[]> response = restTemplate.exchange(
-                doctorEndpoint, HttpMethod.GET, httpEntity, ThirdPartyDoctor[].class);
+                doctorEndpoint, HttpMethod.GET, null, ThirdPartyDoctor[].class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Unsuccessful third party endpoint call.");
@@ -105,16 +103,16 @@ public class BridgeSample implements PatientDoctorBridgeService {
     }
 
     @Override
-    public ScheduleSlotDto bookScheduleSlot(String slotId, String patientId) {
+    public ScheduleSlotDto bookScheduleSlot(String scheduleId, String patientId) {
         URI uri = UriComponentsBuilder.fromHttpUrl(scheduleEndpoint)
-                .queryParam("scheduleId", slotId)
+                .queryParam("scheduleId", scheduleId)
                 .queryParam("patientId", patientId)
                 .build()
                 .encode()
                 .toUri();
 
         ResponseEntity<ScheduleSlotDto> response = restTemplate.exchange(
-                uri, HttpMethod.PUT, httpEntity, ScheduleSlotDto.class);
+                uri, HttpMethod.PATCH, null, ScheduleSlotDto.class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Unsuccessful third party endpoint call.");

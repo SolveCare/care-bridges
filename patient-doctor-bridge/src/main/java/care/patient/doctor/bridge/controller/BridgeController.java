@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/bridge/patient-doctor", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping("/bridge/patient-doctor")
 public class BridgeController {
 
     private PatientDoctorBridgeService patientDoctorBridgeService;
@@ -31,14 +31,14 @@ public class BridgeController {
         }
     }
 
-    @PutMapping("/schedule")
+    @PatchMapping("/schedule")
     public ScheduleSlotDto bookScheduleSlot(@RequestParam String scheduleId,
                                             @RequestParam String patientId) {
         return patientDoctorBridgeService.bookScheduleSlot(scheduleId, patientId);
     }
 
     @PostMapping("/schedule")
-    public ScheduleSlotDto bookScheduleSlot(@RequestBody ScheduleSlotDto scheduleSlotDto) {
+    public ScheduleSlotDto createScheduleSlot(@RequestBody ScheduleSlotDto scheduleSlotDto) {
         return patientDoctorBridgeService.createScheduleSlot(scheduleSlotDto);
     }
 
