@@ -9,7 +9,7 @@ public interface PatientDoctorBridgeService {
 
     List<ScheduleSlotDto> getFreeScheduleSlots(String doctorId);
 
-    List<ScheduleSlotDto> getPatientScheduleSlots(String doctorId, String patientId);
+    List<ScheduleSlotDto> getPatientScheduleSlots(String patientId, String doctorId);
 
     ScheduleSlotDto createScheduleSlot(ScheduleSlotDto scheduleSlotDto);
 

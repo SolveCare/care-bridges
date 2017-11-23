@@ -21,15 +21,17 @@ public class BridgeController {
         this.patientDoctorBridgeService = patientDoctorBridgeService;
     }
 
-    @GetMapping("/schedule")
-    public List<ScheduleSlotDto> getSchedule(@RequestParam String doctorId,
-                                             @RequestParam(required = false) String patientId) {
-        if (StringUtils.isEmpty(patientId)) {
-            return patientDoctorBridgeService.getFreeScheduleSlots(doctorId);
-        } else {
-            return patientDoctorBridgeService.getPatientScheduleSlots(doctorId, patientId);
-        }
+    @GetMapping("/schedule/patient")
+    public List<ScheduleSlotDto> getSchedule(@RequestParam String patientId,
+                                             @RequestParam(required = false) String doctorId) {
+        return patientDoctorBridgeService.getPatientScheduleSlots(patientId, doctorId);
     }
+
+    @GetMapping("/schedule/doctor")
+    public List<ScheduleSlotDto> getSchedule(@RequestParam String doctorId) {
+        return patientDoctorBridgeService.getFreeScheduleSlots(doctorId);
+    }
+
 
     @PatchMapping("/schedule")
     public ScheduleSlotDto bookScheduleSlot(@RequestParam String scheduleId,

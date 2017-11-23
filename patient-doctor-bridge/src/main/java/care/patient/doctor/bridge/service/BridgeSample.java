@@ -23,6 +23,12 @@ public class BridgeSample implements PatientDoctorBridgeService {
     @Value("${third.party.url.doctor}")
     private String doctorEndpoint;
 
+    @Value("${third.party.url.schedule.doctor}")
+    private String doctorScheduleEndpoint;
+
+    @Value("${third.party.url.schedule.patient}")
+    private String patientScheduleEndpoint;
+
     @Value("${third.party.url.schedule}")
     private String scheduleEndpoint;
 
@@ -39,7 +45,7 @@ public class BridgeSample implements PatientDoctorBridgeService {
 
     @Override
     public List<ScheduleSlotDto> getFreeScheduleSlots(String doctorId) {
-        URI uri = UriComponentsBuilder.fromHttpUrl(scheduleEndpoint)
+        URI uri = UriComponentsBuilder.fromHttpUrl(doctorScheduleEndpoint)
                 .queryParam("doctorId", doctorId)
                 .build()
                 .encode()
@@ -56,10 +62,10 @@ public class BridgeSample implements PatientDoctorBridgeService {
     }
 
     @Override
-    public List<ScheduleSlotDto> getPatientScheduleSlots(String doctorId, String patientId) {
-        URI uri = UriComponentsBuilder.fromHttpUrl(scheduleEndpoint)
-                .queryParam("doctorId", doctorId)
+    public List<ScheduleSlotDto> getPatientScheduleSlots(String patientId, String doctorId) {
+        URI uri = UriComponentsBuilder.fromHttpUrl(patientScheduleEndpoint)
                 .queryParam("patientId", patientId)
+                .queryParam("doctorId", doctorId)
                 .build()
                 .encode()
                 .toUri();
