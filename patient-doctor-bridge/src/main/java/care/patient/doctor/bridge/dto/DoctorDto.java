@@ -1,4 +1,4 @@
-package care.patient_doctor.bridge.dto;
+package care.patient.doctor.bridge.dto;
 
 import lombok.Builder;
 import lombok.Data;
@@ -8,9 +8,7 @@ import lombok.Data;
 public class DoctorDto {
 
     private String id;
-
     private String firstName;
-
     private String lastName;
 
 }
